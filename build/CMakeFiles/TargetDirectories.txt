@@ -1,0 +1,3 @@
+/home/zaq/Workspace/Xaq/build/CMakeFiles/xaq.dir
+/home/zaq/Workspace/Xaq/build/CMakeFiles/edit_cache.dir
+/home/zaq/Workspace/Xaq/build/CMakeFiles/rebuild_cache.dir

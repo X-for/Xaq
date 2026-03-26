@@ -1,0 +1,1 @@
+/usr/bin/c++ CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o CMakeFiles/xaq.dir/src/core/value.cpp.o CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o CMakeFiles/xaq.dir/src/frontend/parser.cpp.o CMakeFiles/xaq.dir/src/main.cpp.o -o xaq 
