@@ -92,6 +92,20 @@ struct BinaryExpr : public Expr
     }
 };
 
+// 逻辑运算表达式 (例如: a && b, x || y)
+struct LogicalExpr : public Expr {
+    std::unique_ptr<Expr> left;
+    Token op;
+    std::unique_ptr<Expr> right;
+
+    LogicalExpr(std::unique_ptr<Expr> left, Token op, std::unique_ptr<Expr> right)
+        : left(std::move(left)), op(std::move(op)), right(std::move(right)) {}
+
+    std::string to_string() const override {
+        return "(" + op.lexeme + " " + left->to_string() + " " + right->to_string() + ")";
+    }
+};
+
 // ==========================================
 // 3. 核心语句节点 (Statements)
 // ==========================================

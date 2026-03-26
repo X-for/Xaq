@@ -13,6 +13,8 @@ Value Evaluator::evaluate(Expr *expr)
     else if (auto bin = dynamic_cast<BinaryExpr *>(expr))
     {
         return evaluate_binary(bin);
+    } else if (auto log = dynamic_cast<LogicalExpr *>(expr)) {
+        return evaluate_logical(log);
     }
 
     throw std::runtime_error("Unknown AST node type in evaluator.");
@@ -116,4 +118,21 @@ Value Evaluator::evaluate_binary(BinaryExpr *expr)
     }
 
     throw std::runtime_error("Unsupported binary operator:" + expr->op.lexeme);
+}
+
+Value Evaluator::evaluate_logical(LogicalExpr* expr) {
+    // 关键点：只先求值左边！
+    Value left = evaluate(expr->left.get());
+
+    if (expr->op.type == TokenType::PIPE_PIPE) {
+        // 对于 ||，如果左边是 true，直接返回，右边连看都不看
+        if (left.is_truthy()) return left;
+    } 
+    else if (expr->op.type == TokenType::AMPERSAND_AMPERSAND) {
+        // 对于 &&，如果左边是 false，直接返回，右边连看都不看
+        if (!left.is_truthy()) return left;
+    }
+
+    // 只有当左边无法决定结果时，才去求值右边
+    return evaluate(expr->right.get());
 }

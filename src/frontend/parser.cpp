@@ -46,7 +46,29 @@ Token Parser::consume(TokenType type, const std::string &message)
 // 入口点：解析一个完整的表达式
 std::unique_ptr<Expr> Parser::expression()
 {
-    return equality();
+    return logical_or();
+}
+
+std::unique_ptr<Expr> Parser::logical_or() {
+    auto expr = logical_and();
+
+    while (match({TokenType::PIPE_PIPE})) {
+        Token op = previous();
+        auto right = logical_and();
+        expr = std::make_unique<LogicalExpr>(std::move(expr), std::move(op), std::move(right));
+    }
+    return expr;
+}
+
+std::unique_ptr<Expr> Parser::logical_and() {
+    auto expr = equality(); // 交接给比较运算符
+
+    while (match({TokenType::AMPERSAND_AMPERSAND})) {
+        Token op = previous();
+        auto right = equality();
+        expr = std::make_unique<LogicalExpr>(std::move(expr), std::move(op), std::move(right));
+    }
+    return expr;
 }
 
 // 解析 ==, !=

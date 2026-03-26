@@ -15,4 +15,5 @@ private:
     // 针对每种 AST 节点的具体执行逻辑
     Value evaluate_literal(LiteralExpr* expr);
     Value evaluate_binary(BinaryExpr* expr);
+    Value evaluate_logical(LogicalExpr* expr);
 };

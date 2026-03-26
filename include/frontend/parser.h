@@ -26,6 +26,8 @@ private:
     std::unique_ptr<Expr> factor();
     std::unique_ptr<Expr> call();
     std::unique_ptr<Expr> primary(); // 解析最基础的字面量或括号
+    std::unique_ptr<Expr> logical_or();
+    std::unique_ptr<Expr> logical_and();
 
 public:
     explicit Parser(std::vector<Token> tokens);

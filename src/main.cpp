@@ -45,5 +45,9 @@ int main() {
     // 测试 2: 比较运算符
     run_code("10 >= 5 == true");
 
+    // 测试 3: 逻辑运算符
+    run_code("false && 1 / 0"); // 这里应该短路，不会抛出除零错误
+    run_code("true || false && true");  
+
     return 0;
 }
