@@ -352,6 +352,88 @@ std::vector<std::unique_ptr<Stmt>> Parser::block()
     return statements;
 }
 
+
+// function() 方法的实现
+std::unique_ptr<Stmt> Parser::function(const std::string& kind) {
+    Token keyword = previous(); // 记录是 func 还是 method
+    Token name = consume(TokenType::IDENTIFIER, "Expect " + kind + " name.");
+    
+    // ==========================================
+    // 1. 解析参数列表 (形参)
+    // ==========================================
+    consume(TokenType::LEFT_PAREN, "Expect '(' after " + kind + " name.");
+    std::vector<ParamDecl> parameters;
+    
+    if (!check(TokenType::RIGHT_PAREN)) {
+        do {
+            // 1.1 获取参数名
+            Token param_name = consume(TokenType::IDENTIFIER, "Expect parameter name.");
+            
+            // 1.2 解析可选的类型标注 (如 : Int)
+            std::string type_name = "";
+            if (match({TokenType::COLON})) {
+                type_name = consume(TokenType::IDENTIFIER, "Expect type name.").lexeme;
+            }
+            
+            // 1.3 解析可选的默认值表达式 (如 = 0)
+            std::unique_ptr<Expr> default_value = nullptr;
+            if (match({TokenType::EQUAL})) {
+                default_value = expression();
+            }
+            
+            // 将完整的参数信息打包推入数组
+            parameters.push_back({param_name, type_name, std::move(default_value)});
+        } while (match({TokenType::COMMA}));
+    }
+    consume(TokenType::RIGHT_PAREN, "Expect ')' after parameters.");
+
+    // ==========================================
+    // 2. 解析返回签名 (->)
+    // ==========================================
+    std::vector<ParamDecl> return_vars;
+    
+    // 解析返回签名的两种形式: -> Int 或 -> (ret: Int, err: String)
+    if (match({TokenType::ARROW})) { 
+        if (match({TokenType::LEFT_PAREN})) {
+            // 解析多变量具名返回: -> (ret: Int = 0, err: String)
+            if (!check(TokenType::RIGHT_PAREN)) {
+                do {
+                    Token ret_name = consume(TokenType::IDENTIFIER, "Expect return variable name.");
+                    
+                    std::string type_name = "";
+                    if (match({TokenType::COLON})) {
+                        type_name = consume(TokenType::IDENTIFIER, "Expect type name.").lexeme;
+                    }
+                    
+                    std::unique_ptr<Expr> default_value = nullptr;
+                    if (match({TokenType::EQUAL})) {
+                        default_value = expression();
+                    }
+                    
+                    return_vars.push_back({ret_name, type_name, std::move(default_value)});
+                } while (match({TokenType::COMMA}));
+            }
+            consume(TokenType::RIGHT_PAREN, "Expect ')' after return signature.");
+        } else {
+            // 解析单返回类型: -> Int
+            Token type_token = consume(TokenType::IDENTIFIER, "Expect return type after '->'.");
+            // 对于匿名单返回类型，我们克隆一个 Token 做占位，但清空它的名字
+            Token dummy_name = type_token;
+            dummy_name.lexeme = ""; 
+            return_vars.push_back({dummy_name, type_token.lexeme, nullptr});
+        }
+    }
+
+    // ==========================================
+    // 3. 解析函数体 (Block)
+    // ==========================================
+    consume(TokenType::LEFT_BRACE, "Expect '{' before " + kind + " body.");
+    std::vector<std::unique_ptr<Stmt>> body = block(); 
+
+    return std::make_unique<FunctionStmt>(std::move(keyword), std::move(name), 
+                                          std::move(parameters), std::move(return_vars), std::move(body));
+}
+
 // 公开的调用接口
 std::vector<std::unique_ptr<Stmt>> Parser::parse()
 {

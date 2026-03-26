@@ -53,6 +53,7 @@ void Lexer::scan_token() {
         case '!': add_token(TokenType::NOT); break;
         case '.': add_token(TokenType::DOT); break;
         case ';': add_token(TokenType::SEMICOLON); break;
+        case '?': add_token(TokenType::QUESTION); break; 
         
         
         

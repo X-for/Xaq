@@ -24,9 +24,10 @@ struct Stmt
 };
 
 // 辅助结构: 存储参数或返回变量的详细信息
-struct ParamDecl {
-    Token name; 
-    std::string type_name; // 如果为空, 表示未指定类型
+struct ParamDecl
+{
+    Token name;
+    std::string type_name;               // 如果为空, 表示未指定类型
     std::unique_ptr<Expr> default_value; // 默认值
 };
 
@@ -143,7 +144,6 @@ struct LogicalExpr : public Expr
     }
 };
 
-
 // 属性/方法访问表达式 (例如: math.add 或 s1.age)
 struct GetExpr : public Expr
 {
@@ -191,7 +191,6 @@ struct CallExpr : public Expr
         return res + ")";
     }
 };
-
 
 // ==========================================
 // 3. 核心语句节点 (Statements)
@@ -249,24 +248,50 @@ struct BlockStmt : public Stmt
 
 // 函数声明
 struct FunctionStmt : public Stmt
-{   
-    Token keyword;                           // 'func' 或 'method' 
+{
+    Token keyword;                           // 'func' 或 'method'
     Token name;                              // 函数/方法名
-    std::vector<ParamDecl> params;               // 参数列表
-    std::vector<ParamDecl> return_vars;           // 返回变量列表
+    std::vector<ParamDecl> params;           // 参数列表
+    std::vector<ParamDecl> return_vars;      // 返回变量列表
     std::vector<std::unique_ptr<Stmt>> body; // 函数体
-    FunctionStmt(Token keyword, Token name, std::vector<ParamDecl> params, 
-                 std::vector<ParamDecl> return_vars, std::vector<std::unique_ptr<Stmt>> body) {}
+    FunctionStmt(Token keyword, Token name, std::vector<ParamDecl> params,
+                 std::vector<ParamDecl> return_vars, std::vector<std::unique_ptr<Stmt>> body)
+        : keyword(std::move(keyword)),
+          name(std::move(name)),
+          params(std::move(params)),
+          return_vars(std::move(return_vars)),
+          body(std::move(body)) {}
     std::string to_string() const override
     {
-        std::string res = "(func " + name.lexeme + "(";
+        std::string res = "(" + keyword.lexeme + " " + name.lexeme + "(";
+
+        // 1. 打印参数列表 (包括类型和默认值)
         for (size_t i = 0; i < params.size(); ++i)
         {
-            res += params[i].lexeme;
+            res += params[i].name.lexeme;
+            if (!params[i].type_name.empty())
+                res += ":" + params[i].type_name;
+            if (params[i].default_value)
+                res += "=" + params[i].default_value->to_string();
             if (i < params.size() - 1)
                 res += " ";
         }
+        res += ") -> (";
+
+        // 2. 打印返回签名 (同理)
+        for (size_t i = 0; i < return_vars.size(); ++i)
+        {
+            res += return_vars[i].name.lexeme;
+            if (!return_vars[i].type_name.empty())
+                res += ":" + return_vars[i].type_name;
+            if (return_vars[i].default_value)
+                res += "=" + return_vars[i].default_value->to_string();
+            if (i < return_vars.size() - 1)
+                res += " ";
+        }
         res += ") ";
+
+        // 3. 打印函数体
         for (const auto &stmt : body)
         {
             if (stmt)
@@ -303,4 +328,3 @@ struct ImportStmt : public Stmt
     ImportStmt(Token lang_type, Token module_path, Token alias)
         : lang_type(std::move(lang_type)), module_path(std::move(module_path)), alias(std::move(alias)) {}
 };
-

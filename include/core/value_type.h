@@ -5,11 +5,15 @@ assign type
 
 #pragma once 
 
+
+
 enum class ValueType {
     Null,
     Int,
     Float,
     Bool,
     String,
-    Foreign
+    Foreign,
+    Callable, 
+
 };

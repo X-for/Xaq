@@ -9,6 +9,7 @@ enum class TokenType {
     LEFT_BRACKET, RIGHT_BRACKET, // [ ]
     COMMA, DOT, MINUS, PLUS, SEMICOLON, SLASH, STAR, COLON, // , . - + ; / * :
     EQUAL, NOT, LESS, GREATER,     // = ! < >
+    QUESTION,                      // ?
 
     // 2. 双字符符号
     BANG_EQUAL, EQUAL_EQUAL,     // != ==
