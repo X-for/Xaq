@@ -23,6 +23,13 @@ struct Stmt
     virtual std::string to_string() const = 0; // 方便调试的字符串表示
 };
 
+// 辅助结构: 存储参数或返回变量的详细信息
+struct ParamDecl {
+    Token name; 
+    std::string type_name; // 如果为空, 表示未指定类型
+    std::unique_ptr<Expr> default_value; // 默认值
+};
+
 // ==========================================
 // 2. 核心表达式节点 (Expressions)
 // ==========================================
@@ -136,6 +143,56 @@ struct LogicalExpr : public Expr
     }
 };
 
+
+// 属性/方法访问表达式 (例如: math.add 或 s1.age)
+struct GetExpr : public Expr
+{
+    std::unique_ptr<Expr> object; // 左边的对象 (如 math)
+    Token name;                   // 右边的属性名 (如 add)
+
+    GetExpr(std::unique_ptr<Expr> object, Token name)
+        : object(std::move(object)), name(std::move(name)) {}
+
+    std::string to_string() const override
+    {
+        return "(get " + object->to_string() + " " + name.lexeme + ")";
+    }
+};
+
+// 索引访问表达式 (例如: arr[0])
+struct IndexExpr : public Expr
+{
+    std::unique_ptr<Expr> object; // 左边的对象 (如 arr)
+    std::unique_ptr<Expr> index;  // 括号里的索引表达式 (如 0)
+
+    IndexExpr(std::unique_ptr<Expr> object, std::unique_ptr<Expr> index)
+        : object(std::move(object)), index(std::move(index)) {}
+
+    std::string to_string() const override
+    {
+        return "(index " + object->to_string() + " " + index->to_string() + ")";
+    }
+};
+
+//  CallExpr
+struct CallExpr : public Expr
+{
+    std::unique_ptr<Expr> callee;
+    std::vector<std::unique_ptr<Expr>> arguments;
+
+    CallExpr(std::unique_ptr<Expr> callee, std::vector<std::unique_ptr<Expr>> arguments)
+        : callee(std::move(callee)), arguments(std::move(arguments)) {}
+
+    std::string to_string() const override
+    {
+        std::string res = "(call " + callee->to_string();
+        for (const auto &arg : arguments)
+            res += " " + arg->to_string();
+        return res + ")";
+    }
+};
+
+
 // ==========================================
 // 3. 核心语句节点 (Statements)
 // ==========================================
@@ -177,31 +234,62 @@ struct BlockStmt : public Stmt
     std::vector<std::unique_ptr<Stmt>> statements;
     explicit BlockStmt(std::vector<std::unique_ptr<Stmt>> statements)
         : statements(std::move(statements)) {}
-    std::string to_string() const override {
+    std::string to_string() const override
+    {
         std::string res = "(block ";
-        for (const auto& stmt : statements) {
-            if (stmt) res += stmt->to_string() + " ";
+        for (const auto &stmt : statements)
+        {
+            if (stmt)
+                res += stmt->to_string() + " ";
         }
         res += ")";
         return res;
     }
 };
 
-//  CallExpr
-struct CallExpr : public Expr
-{
-    std::unique_ptr<Expr> callee;
-    std::vector<std::unique_ptr<Expr>> arguments;
+// 函数声明
+struct FunctionStmt : public Stmt
+{   
+    Token keyword;                           // 'func' 或 'method' 
+    Token name;                              // 函数/方法名
+    std::vector<ParamDecl> params;               // 参数列表
+    std::vector<ParamDecl> return_vars;           // 返回变量列表
+    std::vector<std::unique_ptr<Stmt>> body; // 函数体
+    FunctionStmt(Token keyword, Token name, std::vector<ParamDecl> params, 
+                 std::vector<ParamDecl> return_vars, std::vector<std::unique_ptr<Stmt>> body) {}
+    std::string to_string() const override
+    {
+        std::string res = "(func " + name.lexeme + "(";
+        for (size_t i = 0; i < params.size(); ++i)
+        {
+            res += params[i].lexeme;
+            if (i < params.size() - 1)
+                res += " ";
+        }
+        res += ") ";
+        for (const auto &stmt : body)
+        {
+            if (stmt)
+                res += stmt->to_string() + " ";
+        }
+        return res + ")";
+    }
+};
 
-    CallExpr(std::unique_ptr<Expr> callee, std::vector<std::unique_ptr<Expr>> arguments)
-        : callee(std::move(callee)), arguments(std::move(arguments)) {}
+// Return 语句
+struct ReturnStmt : public Stmt
+{
+    Token keyword;
+    std::unique_ptr<Expr> value; // 要返回的表达式 可能为nullptr
+
+    ReturnStmt(Token keyword, std::unique_ptr<Expr> value)
+        : keyword(std::move(keyword)), value(std::move(value)) {}
 
     std::string to_string() const override
     {
-        std::string res = "(call " + callee->to_string();
-        for (const auto &arg : arguments)
-            res += " " + arg->to_string();
-        return res + ")";
+        if (value)
+            return "(return " + value->to_string() + ")";
+        return "(return null)";
     }
 };
 
@@ -216,32 +304,3 @@ struct ImportStmt : public Stmt
         : lang_type(std::move(lang_type)), module_path(std::move(module_path)), alias(std::move(alias)) {}
 };
 
-// 属性/方法访问表达式 (例如: math.add 或 s1.age)
-struct GetExpr : public Expr
-{
-    std::unique_ptr<Expr> object; // 左边的对象 (如 math)
-    Token name;                   // 右边的属性名 (如 add)
-
-    GetExpr(std::unique_ptr<Expr> object, Token name)
-        : object(std::move(object)), name(std::move(name)) {}
-
-    std::string to_string() const override
-    {
-        return "(get " + object->to_string() + " " + name.lexeme + ")";
-    }
-};
-
-// 索引访问表达式 (例如: arr[0])
-struct IndexExpr : public Expr
-{
-    std::unique_ptr<Expr> object; // 左边的对象 (如 arr)
-    std::unique_ptr<Expr> index;  // 括号里的索引表达式 (如 0)
-
-    IndexExpr(std::unique_ptr<Expr> object, std::unique_ptr<Expr> index)
-        : object(std::move(object)), index(std::move(index)) {}
-
-    std::string to_string() const override
-    {
-        return "(index " + object->to_string() + " " + index->to_string() + ")";
-    }
-};
