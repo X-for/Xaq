@@ -29,9 +29,16 @@ private:
     std::unique_ptr<Expr> logical_or();
     std::unique_ptr<Expr> logical_and();
 
+    // 语法解析的路由方法
+    std::unique_ptr<Stmt> declaration();         // 判断是声明变量还是普通语句
+    std::unique_ptr<Stmt> var_declaration();     // 处理 auto x = 42
+    std::unique_ptr<Stmt> statement();           // 处理普通语句
+    std::unique_ptr<Stmt> expression_statement();// 处理独立的表达式 (如 1 + 2)
+
+
 public:
     explicit Parser(std::vector<Token> tokens);
 
     // 启动解析，返回一个表示整个表达式或语句的 AST 节点
-    std::unique_ptr<Expr> parse(); 
+    std::vector<std::unique_ptr<Stmt>> parse(); 
 };

@@ -220,16 +220,59 @@ std::unique_ptr<Expr> Parser::primary()
     throw std::runtime_error("Expect expression.");
 }
 
-// 公开的调用接口
-std::unique_ptr<Expr> Parser::parse()
-{
-    try
-    {
-        return expression();
-    }
-    catch (const std::runtime_error &error)
-    {
+// ==========================================
+// 语句解析 (Statements)
+// ==========================================
+
+
+
+// 路由分支：遇到 auto 关键字就去声明变量，否则当做普通语句
+std::unique_ptr<Stmt> Parser::declaration() {
+    try {
+        if (match({TokenType::AUTO})) {
+            return var_declaration();
+        }
+        return statement();
+    } catch (const std::runtime_error& error) {
         std::cerr << "Parse Error: " << error.what() << "\n";
+        // 遇到错误时，为了防止死循环，强制让指针前进一步 (实际工程中这里需要更复杂的错误恢复机制)
+        advance();
         return nullptr;
     }
+}
+
+// 解析变量声明: auto x1 = 42
+std::unique_ptr<Stmt> Parser::var_declaration() {
+    // 1. 匹配变量名
+    Token name = consume(TokenType::IDENTIFIER, "Expect variable name after 'auto'.");
+    
+    std::unique_ptr<Expr> initializer = nullptr;
+    // 2. 如果有 '='，则解析后面的初始化表达式
+    if (match({TokenType::EQUAL})) {
+        initializer = expression();
+    }
+
+    // 注意：Xaq 语法中没有强制要求分号结尾，所以我们这里暂不强制校验分号
+
+    return std::make_unique<VarDeclStmt>(std::move(name), std::move(initializer));
+}
+
+// 解析普通语句
+std::unique_ptr<Stmt> Parser::statement() {
+    return expression_statement();
+}
+
+// 将普通的数学运算/函数调用包装成一个“语句节点”
+std::unique_ptr<Stmt> Parser::expression_statement() {
+    auto expr = expression();
+    return std::make_unique<ExpressionStmt>(std::move(expr));
+}
+
+// 公开的调用接口
+std::vector<std::unique_ptr<Stmt>> Parser::parse() {
+    std::vector<std::unique_ptr<Stmt>> statements;
+    while (!is_at_end()) {
+        statements.push_back(declaration());
+    }
+    return statements;
 }
