@@ -148,7 +148,12 @@ CMakeFiles/xaq.dir/src/main.cpp.o: /home/zaq/Workspace/Xaq/src/main.cpp \
  /usr/include/c++/13/bits/locale_facets.tcc \
  /usr/include/c++/13/bits/basic_ios.tcc \
  /usr/include/c++/13/bits/ostream.tcc /usr/include/c++/13/istream \
- /usr/include/c++/13/bits/istream.tcc \
+ /usr/include/c++/13/bits/istream.tcc /usr/include/c++/13/fstream \
+ /usr/include/c++/13/bits/codecvt.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
+ /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \
+ /usr/include/c++/13/bits/fstream.tcc /usr/include/c++/13/sstream \
+ /usr/include/c++/13/bits/sstream.tcc \
  /home/zaq/Workspace/Xaq/include/frontend/lexer.h \
  /usr/include/c++/13/vector /usr/include/c++/13/bits/stl_uninitialized.h \
  /usr/include/c++/13/bits/stl_vector.h \
@@ -181,9 +186,7 @@ CMakeFiles/xaq.dir/src/main.cpp.o: /home/zaq/Workspace/Xaq/src/main.cpp \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
  /home/zaq/Workspace/Xaq/include/frontend/ast.h \
- /home/zaq/Workspace/Xaq/include/core/value.h \
- /home/zaq/Workspace/Xaq/include/core/value_type.h \
- /usr/include/c++/13/variant /usr/include/c++/13/bits/parse_numbers.h \
- /usr/include/c++/13/sstream /usr/include/c++/13/bits/sstream.tcc \
+ /home/zaq/Workspace/Xaq/include/core/value.h /usr/include/c++/13/variant \
+ /usr/include/c++/13/bits/parse_numbers.h \
  /home/zaq/Workspace/Xaq/include/backend/evaluator.h \
  /home/zaq/Workspace/Xaq/include/backend/environment.h

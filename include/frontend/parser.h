@@ -39,6 +39,7 @@ private:
 
     std::vector<std::unique_ptr<Stmt>> block(); // 处理块级作用域 { ... }
     std::unique_ptr<Stmt> function(const std::string& kind); // 处理函数和方法声明 
+    std::unique_ptr<Stmt> return_statement(); // 处理 return 语句
 
 public:
     explicit Parser(std::vector<Token> tokens);

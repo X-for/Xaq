@@ -81,12 +81,12 @@ clean: CMakeFiles/xaq.dir/clean
 CMakeFiles/xaq.dir/all:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/build
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=1,2,3,4,5,6,7 "Built target xaq"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=1,2,3,4,5,6,7,8 "Built target xaq"
 .PHONY : CMakeFiles/xaq.dir/all
 
 # Build rule for subdir invocation for target.
 CMakeFiles/xaq.dir/rule: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/zaq/Workspace/Xaq/build/CMakeFiles 7
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/zaq/Workspace/Xaq/build/CMakeFiles 8
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 CMakeFiles/xaq.dir/all
 	$(CMAKE_COMMAND) -E cmake_progress_start /home/zaq/Workspace/Xaq/build/CMakeFiles 0
 .PHONY : CMakeFiles/xaq.dir/rule

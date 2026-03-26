@@ -177,6 +177,30 @@ src/backend/evaluator.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/src/backend/evaluator.cpp.s
 .PHONY : src/backend/evaluator.cpp.s
 
+src/backend/function.o: src/backend/function.cpp.o
+.PHONY : src/backend/function.o
+
+# target to build an object file
+src/backend/function.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/src/backend/function.cpp.o
+.PHONY : src/backend/function.cpp.o
+
+src/backend/function.i: src/backend/function.cpp.i
+.PHONY : src/backend/function.i
+
+# target to preprocess a source file
+src/backend/function.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/src/backend/function.cpp.i
+.PHONY : src/backend/function.cpp.i
+
+src/backend/function.s: src/backend/function.cpp.s
+.PHONY : src/backend/function.s
+
+# target to generate assembly for a file
+src/backend/function.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/src/backend/function.cpp.s
+.PHONY : src/backend/function.cpp.s
+
 src/core/value.o: src/core/value.cpp.o
 .PHONY : src/core/value.o
 
@@ -288,6 +312,9 @@ help:
 	@echo "... src/backend/evaluator.o"
 	@echo "... src/backend/evaluator.i"
 	@echo "... src/backend/evaluator.s"
+	@echo "... src/backend/function.o"
+	@echo "... src/backend/function.i"
+	@echo "... src/backend/function.s"
 	@echo "... src/core/value.o"
 	@echo "... src/core/value.i"
 	@echo "... src/core/value.s"

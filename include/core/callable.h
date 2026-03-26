@@ -10,7 +10,8 @@ class Evaluator; // 前向声明执行器
 struct ReturnException : public std::runtime_error
 {
     Value value;
-    explicit ReturnException(Value value) : std::runtime_error("Function returned"), value(std::move(value)) {}
+    bool has_value; 
+    explicit ReturnException(Value value, bool has_value) : std::runtime_error("Function returned"), value(std::move(value)), has_value(has_value) {}
 };
 
 // 所有可调用对象的积累

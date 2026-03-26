@@ -250,6 +250,12 @@ std::unique_ptr<Stmt> Parser::declaration()
 {
     try
     {
+        if (match({TokenType::FUNC})) {
+            return function("function");
+        }
+         if (match({TokenType::RETURN})) {
+            return return_statement();
+        }
         if (match({TokenType::AUTO}))
         {
             return var_declaration();
@@ -296,7 +302,10 @@ std::unique_ptr<Stmt> Parser::var_declaration()
 
 // 解析普通语句
 std::unique_ptr<Stmt> Parser::statement()
-{
+{   
+    if (match({TokenType::RETURN})) {
+        return return_statement();
+    }
     if (match({TokenType::LEFT_BRACE}))
     {
         return std::make_unique<BlockStmt>(block());
@@ -317,12 +326,14 @@ std::unique_ptr<Expr> Parser::assignment()
     auto expr = logical_or(); // 先解析左边的表达式
 
     if (match({
-            TokenType::EQUAL,
-            TokenType::PLUS_EQUAL,
-            TokenType::MINUS_EQUAL,
-            TokenType::STAR_STAR_EQUAL,
-            TokenType::SLASH_EQUAL,
-            TokenType::PERCENT_EQUAL,
+            TokenType::EQUAL,  // = 
+            TokenType::PLUS_EQUAL, // += 
+            TokenType::MINUS_EQUAL, // -= 
+            TokenType::STAR_EQUAL, // *= 
+            TokenType::SLASH_EQUAL, // /=
+            TokenType::PERCENT_EQUAL, // %=
+            TokenType::STAR_STAR_EQUAL, // **= 
+            TokenType::COLON_EQUAL, // := (海象运算符)
         }))
     {
         Token op = previous();
@@ -432,6 +443,17 @@ std::unique_ptr<Stmt> Parser::function(const std::string& kind) {
 
     return std::make_unique<FunctionStmt>(std::move(keyword), std::move(name), 
                                           std::move(parameters), std::move(return_vars), std::move(body));
+}
+
+std::unique_ptr<Stmt> Parser::return_statement() {
+    Token keyword = previous(); // 记录下return
+    std::vector<std::unique_ptr<Expr>> values;
+    if (!check(TokenType::RIGHT_BRACE)) { // 如果 return 后面不是直接跟着 `}`, 就说明有返回值
+        do {
+            values.push_back(expression());
+        } while (match({TokenType::COMMA})); // 支持 return a, b, c
+    }
+    return std::make_unique<ReturnStmt>(std::move(keyword), std::move(values));
 }
 
 // 公开的调用接口

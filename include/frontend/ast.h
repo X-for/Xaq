@@ -305,16 +305,21 @@ struct FunctionStmt : public Stmt
 struct ReturnStmt : public Stmt
 {
     Token keyword;
-    std::unique_ptr<Expr> value; // 要返回的表达式 可能为nullptr
+    std::vector<std::unique_ptr<Expr>> values; // 要返回的表达式 可能为nullptr
 
-    ReturnStmt(Token keyword, std::unique_ptr<Expr> value)
-        : keyword(std::move(keyword)), value(std::move(value)) {}
+    ReturnStmt(Token keyword, std::vector<std::unique_ptr<Expr>> values)
+        : keyword(std::move(keyword)), values(std::move(values)) {}
 
     std::string to_string() const override
     {
-        if (value)
-            return "(return " + value->to_string() + ")";
-        return "(return null)";
+        if (values.empty())
+            return "(return null)";
+        std::string res = "(return";
+        for (const auto& val : values) {
+            res += " " + val->to_string();
+        }
+        res += ")";
+        return res;
     }
 };
 

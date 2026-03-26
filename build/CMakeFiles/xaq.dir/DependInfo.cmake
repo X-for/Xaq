@@ -10,6 +10,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
   "/home/zaq/Workspace/Xaq/src/backend/environment.cpp" "CMakeFiles/xaq.dir/src/backend/environment.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/backend/environment.cpp.o.d"
   "/home/zaq/Workspace/Xaq/src/backend/evaluator.cpp" "CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o.d"
+  "/home/zaq/Workspace/Xaq/src/backend/function.cpp" "CMakeFiles/xaq.dir/src/backend/function.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/backend/function.cpp.o.d"
   "/home/zaq/Workspace/Xaq/src/core/value.cpp" "CMakeFiles/xaq.dir/src/core/value.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/core/value.cpp.o.d"
   "/home/zaq/Workspace/Xaq/src/frontend/lexer.cpp" "CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o.d"
   "/home/zaq/Workspace/Xaq/src/frontend/parser.cpp" "CMakeFiles/xaq.dir/src/frontend/parser.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/frontend/parser.cpp.o.d"

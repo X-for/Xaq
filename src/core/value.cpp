@@ -25,6 +25,17 @@ std::ostream &operator<<(std::ostream &os, const Value &val) {
         case ValueType::String:
             os << "\"" << std::get<std::string>(val.value_) << "\"";
             break;
+        case ValueType::Array: {
+            auto arr = val.as_array();
+            os << "[";
+            for (size_t i = 0; i < arr->size(); ++i) {
+                os << (*arr)[i];
+                if (i < arr->size() - 1)
+                    os << ", ";
+            }
+            os << "]";
+            break;
+        }
         default:
             os << "unknown";
     }

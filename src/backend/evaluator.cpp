@@ -1,4 +1,5 @@
 #include "backend/evaluator.h"
+#include "backend/function.h"
 
 // ==========================================
 // 1. 语句执行入口与路由
@@ -26,6 +27,12 @@ void Evaluator::execute(Stmt *stmt)
     else if (auto block_stmt = dynamic_cast<BlockStmt *>(stmt))
     {
         execute_block(block_stmt, std::make_shared<Environment>(environment_));
+    }
+    else if (auto func_stmt = dynamic_cast<FunctionStmt *>(stmt)) {
+        execute_function(func_stmt);
+    }
+    else if (auto return_stmt = dynamic_cast<ReturnStmt *>(stmt)) {
+        execute_return(return_stmt);
     }
     else
     {
@@ -87,7 +94,9 @@ Value Evaluator::evaluate(Expr *expr)
     } else if (auto assign = dynamic_cast<AssignExpr* >(expr)) {
         return evaluate_assign(assign);
     }
-
+    else if (auto call_expr = dynamic_cast<CallExpr*>(expr)) {
+        return evaluate_call(call_expr);
+    }
     throw std::runtime_error("Unknown AST node type in evaluator.");
 }
 
@@ -263,4 +272,66 @@ void Evaluator::execute_block(BlockStmt* stmt, std::shared_ptr<Environment> bloc
 // 读取变量：直接向 Environment 要数据
 Value Evaluator::evaluate_variable(VariableExpr* expr) {
     return environment_->get(expr->name.lexeme);
+}
+
+
+// ============ 函数/方法 ===============
+
+// 把函数存入内存
+void Evaluator::execute_function(FunctionStmt* stmt) {
+    auto func = std::make_shared<Function>(stmt, environment_);
+    environment_->define(stmt->name.lexeme, Value(func));
+}
+
+// 2. 执行 Return，直接抛出异常打断 C++ 调用栈
+void Evaluator::execute_return(ReturnStmt* stmt) {
+    // 无返回值
+    if (stmt->values.empty()) {
+        throw ReturnException(Value(), false); // 没有返回值，触发隐式返回规则
+    }
+    // 单返回值处理
+    if (stmt->values.size() == 1) {
+        Value value = evaluate(stmt->values[0].get());
+        throw ReturnException(value, true); // 将算出的值包裹在异常中抛出
+    }
+    // 多返回值处理
+    auto results = std::make_shared<std::vector<Value>>();
+    for (const auto& expr : stmt->values) {
+        results->push_back(evaluate(expr.get()));
+    }
+    
+    throw ReturnException(Value(results), true);
+}
+
+// 3. 执行函数调用 (例如: add(1, 2))
+Value Evaluator::evaluate_call(CallExpr* expr) {
+    // 3.1 先算出被调用的对象 (比如从内存里拿出 add 函数)
+    Value callee = evaluate(expr->callee.get());
+
+    // 3.2 依次算出所有传入的实参
+    std::vector<Value> arguments;
+    for (const auto& arg : expr->arguments) {
+        arguments.push_back(evaluate(arg.get()));
+    }
+
+    // 3.3 验证它是不是一个可调用对象
+    std::shared_ptr<BaseCallable> function = callee.as_callable();
+
+    // 3.4 触发它的 call 方法，并将自己 (Evaluator) 传进去以供执行函数体
+    return function->call(this, arguments);
+}
+
+// 4. 补充一个 execute_block 的重载，专为函数体服务
+void Evaluator::execute_block(const std::vector<std::unique_ptr<Stmt>>& statements, std::shared_ptr<Environment> block_env) {
+    std::shared_ptr<Environment> previous = environment_; 
+    try {
+        environment_ = block_env; 
+        for (const auto& statement : statements) {
+            if (statement) execute(statement.get());
+        } 
+    } catch (...) {
+        environment_ = previous; 
+        throw; 
+    }
+    environment_ = previous; 
 }

@@ -174,9 +174,7 @@ CMakeFiles/xaq.dir/src/frontend/parser.cpp.o: \
  /usr/include/c++/13/bits/ostream.tcc /usr/include/c++/13/istream \
  /usr/include/c++/13/bits/istream.tcc \
  /home/zaq/Workspace/Xaq/include/frontend/ast.h \
- /home/zaq/Workspace/Xaq/include/core/value.h \
- /home/zaq/Workspace/Xaq/include/core/value_type.h \
- /usr/include/c++/13/variant \
+ /home/zaq/Workspace/Xaq/include/core/value.h /usr/include/c++/13/variant \
  /usr/include/c++/13/bits/enable_special_members.h \
  /usr/include/c++/13/bits/parse_numbers.h /usr/include/c++/13/sstream \
  /usr/include/c++/13/bits/sstream.tcc

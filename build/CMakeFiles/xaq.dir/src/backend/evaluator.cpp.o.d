@@ -155,14 +155,15 @@ CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o: \
  /usr/include/c++/13/bits/basic_ios.tcc \
  /usr/include/c++/13/bits/ostream.tcc /usr/include/c++/13/istream \
  /usr/include/c++/13/bits/istream.tcc \
- /home/zaq/Workspace/Xaq/include/core/value.h \
- /home/zaq/Workspace/Xaq/include/core/value_type.h \
- /usr/include/c++/13/variant \
+ /home/zaq/Workspace/Xaq/include/core/value.h /usr/include/c++/13/variant \
  /usr/include/c++/13/bits/enable_special_members.h \
  /usr/include/c++/13/bits/parse_numbers.h \
- /usr/include/c++/13/ext/aligned_buffer.h /usr/include/c++/13/memory \
- /usr/include/c++/13/bits/stl_tempbuf.h \
+ /usr/include/c++/13/ext/aligned_buffer.h /usr/include/c++/13/vector \
  /usr/include/c++/13/bits/stl_uninitialized.h \
+ /usr/include/c++/13/bits/stl_vector.h \
+ /usr/include/c++/13/bits/stl_bvector.h \
+ /usr/include/c++/13/bits/vector.tcc /usr/include/c++/13/memory \
+ /usr/include/c++/13/bits/stl_tempbuf.h \
  /usr/include/c++/13/bits/stl_raw_storage_iter.h \
  /usr/include/c++/13/bits/align.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
@@ -178,10 +179,7 @@ CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o: \
  /usr/include/c++/13/bits/atomic_lockfree_defines.h \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
- /usr/include/c++/13/pstl/execution_defs.h /usr/include/c++/13/vector \
- /usr/include/c++/13/bits/stl_vector.h \
- /usr/include/c++/13/bits/stl_bvector.h \
- /usr/include/c++/13/bits/vector.tcc /usr/include/c++/13/sstream \
+ /usr/include/c++/13/pstl/execution_defs.h /usr/include/c++/13/sstream \
  /usr/include/c++/13/bits/sstream.tcc \
  /home/zaq/Workspace/Xaq/include/backend/environment.h \
  /usr/include/c++/13/unordered_map \
@@ -189,4 +187,6 @@ CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o: \
  /usr/include/c++/13/bits/hashtable.h \
  /usr/include/c++/13/bits/hashtable_policy.h \
  /usr/include/c++/13/bits/node_handle.h \
- /usr/include/c++/13/bits/erase_if.h
+ /usr/include/c++/13/bits/erase_if.h \
+ /home/zaq/Workspace/Xaq/include/backend/function.h \
+ /home/zaq/Workspace/Xaq/include/core/callable.h
