@@ -69,10 +69,24 @@ include CMakeFiles/xaq.dir/progress.make
 # Include the compile flags for this target's objects.
 include CMakeFiles/xaq.dir/flags.make
 
+CMakeFiles/xaq.dir/src/backend/environment.cpp.o: CMakeFiles/xaq.dir/flags.make
+CMakeFiles/xaq.dir/src/backend/environment.cpp.o: /home/zaq/Workspace/Xaq/src/backend/environment.cpp
+CMakeFiles/xaq.dir/src/backend/environment.cpp.o: CMakeFiles/xaq.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/xaq.dir/src/backend/environment.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/xaq.dir/src/backend/environment.cpp.o -MF CMakeFiles/xaq.dir/src/backend/environment.cpp.o.d -o CMakeFiles/xaq.dir/src/backend/environment.cpp.o -c /home/zaq/Workspace/Xaq/src/backend/environment.cpp
+
+CMakeFiles/xaq.dir/src/backend/environment.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/xaq.dir/src/backend/environment.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/zaq/Workspace/Xaq/src/backend/environment.cpp > CMakeFiles/xaq.dir/src/backend/environment.cpp.i
+
+CMakeFiles/xaq.dir/src/backend/environment.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/xaq.dir/src/backend/environment.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/zaq/Workspace/Xaq/src/backend/environment.cpp -o CMakeFiles/xaq.dir/src/backend/environment.cpp.s
+
 CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o: CMakeFiles/xaq.dir/flags.make
 CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o: /home/zaq/Workspace/Xaq/src/backend/evaluator.cpp
 CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o: CMakeFiles/xaq.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o -MF CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o.d -o CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o -c /home/zaq/Workspace/Xaq/src/backend/evaluator.cpp
 
 CMakeFiles/xaq.dir/src/backend/evaluator.cpp.i: cmake_force
@@ -86,7 +100,7 @@ CMakeFiles/xaq.dir/src/backend/evaluator.cpp.s: cmake_force
 CMakeFiles/xaq.dir/src/core/value.cpp.o: CMakeFiles/xaq.dir/flags.make
 CMakeFiles/xaq.dir/src/core/value.cpp.o: /home/zaq/Workspace/Xaq/src/core/value.cpp
 CMakeFiles/xaq.dir/src/core/value.cpp.o: CMakeFiles/xaq.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/xaq.dir/src/core/value.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/xaq.dir/src/core/value.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/xaq.dir/src/core/value.cpp.o -MF CMakeFiles/xaq.dir/src/core/value.cpp.o.d -o CMakeFiles/xaq.dir/src/core/value.cpp.o -c /home/zaq/Workspace/Xaq/src/core/value.cpp
 
 CMakeFiles/xaq.dir/src/core/value.cpp.i: cmake_force
@@ -100,7 +114,7 @@ CMakeFiles/xaq.dir/src/core/value.cpp.s: cmake_force
 CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o: CMakeFiles/xaq.dir/flags.make
 CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o: /home/zaq/Workspace/Xaq/src/frontend/lexer.cpp
 CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o: CMakeFiles/xaq.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o -MF CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o.d -o CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o -c /home/zaq/Workspace/Xaq/src/frontend/lexer.cpp
 
 CMakeFiles/xaq.dir/src/frontend/lexer.cpp.i: cmake_force
@@ -114,7 +128,7 @@ CMakeFiles/xaq.dir/src/frontend/lexer.cpp.s: cmake_force
 CMakeFiles/xaq.dir/src/frontend/parser.cpp.o: CMakeFiles/xaq.dir/flags.make
 CMakeFiles/xaq.dir/src/frontend/parser.cpp.o: /home/zaq/Workspace/Xaq/src/frontend/parser.cpp
 CMakeFiles/xaq.dir/src/frontend/parser.cpp.o: CMakeFiles/xaq.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/xaq.dir/src/frontend/parser.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/xaq.dir/src/frontend/parser.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/xaq.dir/src/frontend/parser.cpp.o -MF CMakeFiles/xaq.dir/src/frontend/parser.cpp.o.d -o CMakeFiles/xaq.dir/src/frontend/parser.cpp.o -c /home/zaq/Workspace/Xaq/src/frontend/parser.cpp
 
 CMakeFiles/xaq.dir/src/frontend/parser.cpp.i: cmake_force
@@ -128,7 +142,7 @@ CMakeFiles/xaq.dir/src/frontend/parser.cpp.s: cmake_force
 CMakeFiles/xaq.dir/src/main.cpp.o: CMakeFiles/xaq.dir/flags.make
 CMakeFiles/xaq.dir/src/main.cpp.o: /home/zaq/Workspace/Xaq/src/main.cpp
 CMakeFiles/xaq.dir/src/main.cpp.o: CMakeFiles/xaq.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/xaq.dir/src/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/xaq.dir/src/main.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/xaq.dir/src/main.cpp.o -MF CMakeFiles/xaq.dir/src/main.cpp.o.d -o CMakeFiles/xaq.dir/src/main.cpp.o -c /home/zaq/Workspace/Xaq/src/main.cpp
 
 CMakeFiles/xaq.dir/src/main.cpp.i: cmake_force
@@ -141,6 +155,7 @@ CMakeFiles/xaq.dir/src/main.cpp.s: cmake_force
 
 # Object files for target xaq
 xaq_OBJECTS = \
+"CMakeFiles/xaq.dir/src/backend/environment.cpp.o" \
 "CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o" \
 "CMakeFiles/xaq.dir/src/core/value.cpp.o" \
 "CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o" \
@@ -150,6 +165,7 @@ xaq_OBJECTS = \
 # External object files for target xaq
 xaq_EXTERNAL_OBJECTS =
 
+xaq: CMakeFiles/xaq.dir/src/backend/environment.cpp.o
 xaq: CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o
 xaq: CMakeFiles/xaq.dir/src/core/value.cpp.o
 xaq: CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o
@@ -157,7 +173,7 @@ xaq: CMakeFiles/xaq.dir/src/frontend/parser.cpp.o
 xaq: CMakeFiles/xaq.dir/src/main.cpp.o
 xaq: CMakeFiles/xaq.dir/build.make
 xaq: CMakeFiles/xaq.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX executable xaq"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/home/zaq/Workspace/Xaq/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX executable xaq"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/xaq.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

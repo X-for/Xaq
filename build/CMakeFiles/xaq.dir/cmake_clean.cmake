@@ -1,4 +1,6 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/xaq.dir/src/backend/environment.cpp.o"
+  "CMakeFiles/xaq.dir/src/backend/environment.cpp.o.d"
   "CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o"
   "CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o.d"
   "CMakeFiles/xaq.dir/src/core/value.cpp.o"

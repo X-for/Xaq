@@ -185,4 +185,5 @@ CMakeFiles/xaq.dir/src/main.cpp.o: /home/zaq/Workspace/Xaq/src/main.cpp \
  /home/zaq/Workspace/Xaq/include/core/value_type.h \
  /usr/include/c++/13/variant /usr/include/c++/13/bits/parse_numbers.h \
  /usr/include/c++/13/sstream /usr/include/c++/13/bits/sstream.tcc \
- /home/zaq/Workspace/Xaq/include/backend/evaluator.h
+ /home/zaq/Workspace/Xaq/include/backend/evaluator.h \
+ /home/zaq/Workspace/Xaq/include/backend/environment.h

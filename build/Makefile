@@ -129,6 +129,30 @@ xaq/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/build
 .PHONY : xaq/fast
 
+src/backend/environment.o: src/backend/environment.cpp.o
+.PHONY : src/backend/environment.o
+
+# target to build an object file
+src/backend/environment.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/src/backend/environment.cpp.o
+.PHONY : src/backend/environment.cpp.o
+
+src/backend/environment.i: src/backend/environment.cpp.i
+.PHONY : src/backend/environment.i
+
+# target to preprocess a source file
+src/backend/environment.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/src/backend/environment.cpp.i
+.PHONY : src/backend/environment.cpp.i
+
+src/backend/environment.s: src/backend/environment.cpp.s
+.PHONY : src/backend/environment.s
+
+# target to generate assembly for a file
+src/backend/environment.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xaq.dir/build.make CMakeFiles/xaq.dir/src/backend/environment.cpp.s
+.PHONY : src/backend/environment.cpp.s
+
 src/backend/evaluator.o: src/backend/evaluator.cpp.o
 .PHONY : src/backend/evaluator.o
 
@@ -258,6 +282,9 @@ help:
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
 	@echo "... xaq"
+	@echo "... src/backend/environment.o"
+	@echo "... src/backend/environment.i"
+	@echo "... src/backend/environment.s"
 	@echo "... src/backend/evaluator.o"
 	@echo "... src/backend/evaluator.i"
 	@echo "... src/backend/evaluator.s"

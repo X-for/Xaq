@@ -8,6 +8,7 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
+  "/home/zaq/Workspace/Xaq/src/backend/environment.cpp" "CMakeFiles/xaq.dir/src/backend/environment.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/backend/environment.cpp.o.d"
   "/home/zaq/Workspace/Xaq/src/backend/evaluator.cpp" "CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/backend/evaluator.cpp.o.d"
   "/home/zaq/Workspace/Xaq/src/core/value.cpp" "CMakeFiles/xaq.dir/src/core/value.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/core/value.cpp.o.d"
   "/home/zaq/Workspace/Xaq/src/frontend/lexer.cpp" "CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o" "gcc" "CMakeFiles/xaq.dir/src/frontend/lexer.cpp.o.d"

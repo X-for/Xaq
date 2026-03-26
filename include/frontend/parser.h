@@ -11,6 +11,7 @@ private:
 
     // --- 辅助方法（和 Lexer 很像） ---
     Token peek() const;
+    Token peek_next() const;
     Token previous() const;
     bool is_at_end() const;
     bool check(TokenType type) const;
@@ -34,7 +35,9 @@ private:
     std::unique_ptr<Stmt> var_declaration();     // 处理 auto x = 42
     std::unique_ptr<Stmt> statement();           // 处理普通语句
     std::unique_ptr<Stmt> expression_statement();// 处理独立的表达式 (如 1 + 2)
+    std::unique_ptr<Expr> assignment();          // 处理赋值表达式 (如 x = 1 + 2)
 
+    std::vector<std::unique_ptr<Stmt>> block(); // 处理块级作用域 { ... } 
 
 public:
     explicit Parser(std::vector<Token> tokens);

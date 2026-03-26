@@ -14,10 +14,11 @@ enum class TokenType {
     BANG_EQUAL, EQUAL_EQUAL,     // != ==
     GREATER_EQUAL, LESS_EQUAL,   // >= <=
     PLUS_EQUAL, MINUS_EQUAL,     // += -=
+    SLASH_EQUAL, STAR_EQUAL,     // /= *=
     ARROW,                       // ->
-
-        // 补充的符号
     PERCENT, PERCENT_EQUAL,      // % %=
+        // 补充的符号
+    
     STAR_STAR, STAR_STAR_EQUAL,  // ** **=
     COLON_EQUAL,                 // := (海象运算符)
     AMPERSAND, PIPE, CARET, TILDE, // & | ^ ~ (位运算)

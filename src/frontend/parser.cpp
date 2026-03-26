@@ -6,6 +6,12 @@ Parser::Parser(std::vector<Token> tokens) : tokens_(std::move(tokens)) {}
 
 // --- 辅助方法 ---
 Token Parser::peek() const { return tokens_[current_]; }
+Token Parser::peek_next() const
+{
+    if (current_ + 1 >= tokens_.size())
+        return tokens_.back();
+    return tokens_[current_ + 1];
+}
 Token Parser::previous() const { return tokens_[current_ - 1]; }
 bool Parser::is_at_end() const { return peek().type == TokenType::END_OF_FILE; }
 Token Parser::advance()
@@ -46,13 +52,15 @@ Token Parser::consume(TokenType type, const std::string &message)
 // 入口点：解析一个完整的表达式
 std::unique_ptr<Expr> Parser::expression()
 {
-    return logical_or();
+    return assignment();
 }
 
-std::unique_ptr<Expr> Parser::logical_or() {
+std::unique_ptr<Expr> Parser::logical_or()
+{
     auto expr = logical_and();
 
-    while (match({TokenType::PIPE_PIPE})) {
+    while (match({TokenType::PIPE_PIPE}))
+    {
         Token op = previous();
         auto right = logical_and();
         expr = std::make_unique<LogicalExpr>(std::move(expr), std::move(op), std::move(right));
@@ -60,10 +68,12 @@ std::unique_ptr<Expr> Parser::logical_or() {
     return expr;
 }
 
-std::unique_ptr<Expr> Parser::logical_and() {
+std::unique_ptr<Expr> Parser::logical_and()
+{
     auto expr = equality(); // 交接给比较运算符
 
-    while (match({TokenType::AMPERSAND_AMPERSAND})) {
+    while (match({TokenType::AMPERSAND_AMPERSAND}))
+    {
         Token op = previous();
         auto right = equality();
         expr = std::make_unique<LogicalExpr>(std::move(expr), std::move(op), std::move(right));
@@ -127,33 +137,41 @@ std::unique_ptr<Expr> Parser::factor()
     return expr;
 }
 
-std::unique_ptr<Expr> Parser::call() {
+std::unique_ptr<Expr> Parser::call()
+{
     auto expr = primary(); // 先获取最左边的基础元素（比如 math, arr）
 
-    while (true) { 
-        if (match({TokenType::LEFT_PAREN})) {
+    while (true)
+    {
+        if (match({TokenType::LEFT_PAREN}))
+        {
             // 解析函数调用: func_name(arg1, arg2)
             std::vector<std::unique_ptr<Expr>> args;
-            if (!check(TokenType::RIGHT_PAREN)) {
-                do {
+            if (!check(TokenType::RIGHT_PAREN))
+            {
+                do
+                {
                     args.push_back(expression());
                 } while (match({TokenType::COMMA}));
             }
             consume(TokenType::RIGHT_PAREN, "Expect ')' after arguments.");
             expr = std::unique_ptr<Expr>(new CallExpr(std::move(expr), std::move(args)));
-        } 
-        else if (match({TokenType::DOT})) {
+        }
+        else if (match({TokenType::DOT}))
+        {
             // 解析属性访问: object.name
             Token name = consume(TokenType::IDENTIFIER, "Expect property name after '.'.");
             expr = std::unique_ptr<Expr>(new GetExpr(std::move(expr), std::move(name)));
         }
-        else if (match({TokenType::LEFT_BRACKET})) {
+        else if (match({TokenType::LEFT_BRACKET}))
+        {
             // 解析数组索引: arr[0]
             auto index = expression();
             consume(TokenType::RIGHT_BRACKET, "Expect ']' after index.");
             expr = std::unique_ptr<Expr>(new IndexExpr(std::move(expr), std::move(index)));
         }
-        else {
+        else
+        {
             break; // 如果都不是，就退出循环
         }
     }
@@ -171,14 +189,17 @@ std::unique_ptr<Expr> Parser::primary()
     if (match({TokenType::NULL_LITERAL}))
         return std::make_unique<LiteralExpr>(Value());
 
-    if (match({TokenType::NUMBER})) {
+    if (match({TokenType::NUMBER}))
+    {
         std::string text = previous().lexeme;
         // 如果包含小数点，解析为 Float
-        if (text.find('.') != std::string::npos) {
+        if (text.find('.') != std::string::npos)
+        {
             return std::make_unique<LiteralExpr>(Value(std::stod(text)));
-        } 
+        }
         // 否则解析为 Int
-        else {
+        else
+        {
             return std::make_unique<LiteralExpr>(Value(static_cast<int64_t>(std::stoll(text))));
         }
     }
@@ -224,16 +245,23 @@ std::unique_ptr<Expr> Parser::primary()
 // 语句解析 (Statements)
 // ==========================================
 
-
-
 // 路由分支：遇到 auto 关键字就去声明变量，否则当做普通语句
-std::unique_ptr<Stmt> Parser::declaration() {
-    try {
-        if (match({TokenType::AUTO})) {
+std::unique_ptr<Stmt> Parser::declaration()
+{
+    try
+    {
+        if (match({TokenType::AUTO}))
+        {
+            return var_declaration();
+        }
+        if (check(TokenType::IDENTIFIER) && peek_next().type == TokenType::COLON)
+        {
             return var_declaration();
         }
         return statement();
-    } catch (const std::runtime_error& error) {
+    }
+    catch (const std::runtime_error &error)
+    {
         std::cerr << "Parse Error: " << error.what() << "\n";
         // 遇到错误时，为了防止死循环，强制让指针前进一步 (实际工程中这里需要更复杂的错误恢复机制)
         advance();
@@ -242,13 +270,22 @@ std::unique_ptr<Stmt> Parser::declaration() {
 }
 
 // 解析变量声明: auto x1 = 42
-std::unique_ptr<Stmt> Parser::var_declaration() {
+std::unique_ptr<Stmt> Parser::var_declaration()
+{
     // 1. 匹配变量名
     Token name = consume(TokenType::IDENTIFIER, "Expect variable name after 'auto'.");
-    
+
+    // --- 新增：处理类型标注 (如 : Int) ---
+    if (match({TokenType::COLON}))
+    {
+        // 由于我们的 Evaluator 目前是动态类型的，这里我们暂时只“吞掉”类型名称
+        consume(TokenType::IDENTIFIER, "Expect type name after ':'.");
+    }
+
     std::unique_ptr<Expr> initializer = nullptr;
     // 2. 如果有 '='，则解析后面的初始化表达式
-    if (match({TokenType::EQUAL})) {
+    if (match({TokenType::EQUAL}))
+    {
         initializer = expression();
     }
 
@@ -258,20 +295,69 @@ std::unique_ptr<Stmt> Parser::var_declaration() {
 }
 
 // 解析普通语句
-std::unique_ptr<Stmt> Parser::statement() {
+std::unique_ptr<Stmt> Parser::statement()
+{
+    if (match({TokenType::LEFT_BRACE}))
+    {
+        return std::make_unique<BlockStmt>(block());
+    }
     return expression_statement();
 }
 
 // 将普通的数学运算/函数调用包装成一个“语句节点”
-std::unique_ptr<Stmt> Parser::expression_statement() {
+std::unique_ptr<Stmt> Parser::expression_statement()
+{
     auto expr = expression();
     return std::make_unique<ExpressionStmt>(std::move(expr));
 }
 
-// 公开的调用接口
-std::vector<std::unique_ptr<Stmt>> Parser::parse() {
+// 实现赋值表达式解析
+std::unique_ptr<Expr> Parser::assignment()
+{
+    auto expr = logical_or(); // 先解析左边的表达式
+
+    if (match({
+            TokenType::EQUAL,
+            TokenType::PLUS_EQUAL,
+            TokenType::MINUS_EQUAL,
+            TokenType::STAR_STAR_EQUAL,
+            TokenType::SLASH_EQUAL,
+            TokenType::PERCENT_EQUAL,
+        }))
+    {
+        Token op = previous();
+        auto value = assignment();
+
+        if (auto var_expr = dynamic_cast<VariableExpr *>(expr.get()))
+        {
+            Token name = var_expr->name;
+            return std::make_unique<AssignExpr>(std::move(name), std::move(op), std::move(value));
+        }
+        throw std::runtime_error("Invalid assignment target.");
+    }
+    return expr;
+}
+
+// block() 方法的实现
+std::vector<std::unique_ptr<Stmt>> Parser::block()
+{
     std::vector<std::unique_ptr<Stmt>> statements;
-    while (!is_at_end()) {
+
+    while (!check(TokenType::RIGHT_BRACE) && !is_at_end())
+    {
+        statements.push_back(declaration());
+    }
+
+    consume(TokenType::RIGHT_BRACE, "Expect '}' after block.");
+    return statements;
+}
+
+// 公开的调用接口
+std::vector<std::unique_ptr<Stmt>> Parser::parse()
+{
+    std::vector<std::unique_ptr<Stmt>> statements;
+    while (!is_at_end())
+    {
         statements.push_back(declaration());
     }
     return statements;
