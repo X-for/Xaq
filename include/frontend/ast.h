@@ -1,33 +1,30 @@
 #pragma once
-#include "frontend/token.h"
 #include "core/value.h"
+#include "frontend/token.h"
 #include <memory>
-#include <vector>
 #include <sstream>
+#include <vector>
 
 // ==========================================
 // 1. 基类定义
 // ==========================================
 
 // 表达式基类 (会产生 Value)
-struct Expr
-{
+struct Expr {
     virtual ~Expr() = default;
     virtual std::string to_string() const = 0; // 方便调试的字符串表示
 };
 
 // 语句基类 (执行动作，不产生 Value)
-struct Stmt
-{
+struct Stmt {
     virtual ~Stmt() = default;
     virtual std::string to_string() const = 0; // 方便调试的字符串表示
 };
 
 // 辅助结构: 存储参数或返回变量的详细信息
-struct ParamDecl
-{
+struct ParamDecl {
     Token name;
-    std::string type_name;               // 如果为空, 表示未指定类型
+    std::string type_name; // 如果为空, 表示未指定类型
     std::unique_ptr<Expr> default_value; // 默认值
 };
 
@@ -36,23 +33,19 @@ struct ParamDecl
 // ==========================================
 
 // 字面量表达式 (例如: 42, "Hello", true)
-struct LiteralExpr : public Expr
-{
+struct LiteralExpr : public Expr {
     Value value; // 直接复用我们之前写的核心 Value 类型
 
-    explicit LiteralExpr(Value value) : value(std::move(value)) {}
+    explicit LiteralExpr(Value value)
+        : value(std::move(value)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         std::ostringstream oss;
 
         // 如果是字符串，我们在 AST 打印时给它套上双引号以便区分
-        if (value.get_type() == ValueType::String)
-        {
+        if (value.get_type() == ValueType::String) {
             oss << "\"" << value << "\"";
-        }
-        else
-        {
+        } else {
             // 其他类型（数字、布尔、Null）直接复用 Value 的 << 重载
             oss << value;
         }
@@ -62,47 +55,43 @@ struct LiteralExpr : public Expr
 };
 
 // 变量访问表达式 (例如: x, arr)
-struct VariableExpr : public Expr
-{
+struct VariableExpr : public Expr {
     Token name;
 
-    explicit VariableExpr(Token name) : name(std::move(name)) {}
+    explicit VariableExpr(Token name)
+        : name(std::move(name)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         return name.lexeme; // 直接打印变量名
     }
 };
 
 // 赋值表达式 (例如: a = 10, a += 5)
-struct AssignExpr : public Expr
-{
-    Token name;                  // 被赋值的变量名
-    Token op;                    // 赋值操作符 (=, +=, -= 等)
+struct AssignExpr : public Expr {
+    Token name; // 被赋值的变量名
+    Token op; // 赋值操作符 (=, +=, -= 等)
     std::unique_ptr<Expr> value; // 等号右边的表达式
 
     AssignExpr(Token name, Token op, std::unique_ptr<Expr> value)
-        : name(std::move(name)), op(std::move(op)), value(std::move(value)) {}
+        : name(std::move(name))
+        , op(std::move(op))
+        , value(std::move(value)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         return "(" + op.lexeme + " " + name.lexeme + " " + value->to_string() + ")";
     }
 };
 
 // 数组字面量表达式 (例如: [1, 2, 3])
-struct ArrayExpr : public Expr
-{
+struct ArrayExpr : public Expr {
     std::vector<std::unique_ptr<Expr>> elements; // 存放数组里的每一个元素表达式
 
     explicit ArrayExpr(std::vector<std::unique_ptr<Expr>> elements)
-        : elements(std::move(elements)) {}
+        : elements(std::move(elements)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         std::string res = "[";
-        for (size_t i = 0; i < elements.size(); ++i)
-        {
+        for (size_t i = 0; i < elements.size(); ++i) {
             res += elements[i]->to_string();
             if (i < elements.size() - 1)
                 res += " "; // AST 打印时用空格隔开
@@ -112,81 +101,84 @@ struct ArrayExpr : public Expr
     }
 };
 
+// 一元运算表达式 (例如: -1, !true, ~x)
+struct UnaryExpr : public Expr {
+    Token op;
+    std::unique_ptr<Expr> right;
+    UnaryExpr(Token op, std::unique_ptr<Expr> right)
+        : op(std::move(op))
+        , right(std::move(right)) { }
+    std::string to_string() const override { return "(" + op.lexeme + right->to_string() + ")"; }
+};
+
 // 二元运算表达式 (例如: a + b, x == y)
-struct BinaryExpr : public Expr
-{
-    std::unique_ptr<Expr> left;  // 左操作数
-    Token op;                    // 操作符 (如 PLUS, EQUAL_EQUAL)
+struct BinaryExpr : public Expr {
+    std::unique_ptr<Expr> left; // 左操作数
+    Token op; // 操作符 (如 PLUS, EQUAL_EQUAL)
     std::unique_ptr<Expr> right; // 右操作数
 
     BinaryExpr(std::unique_ptr<Expr> left, Token op, std::unique_ptr<Expr> right)
-        : left(std::move(left)), op(std::move(op)), right(std::move(right)) {}
+        : left(std::move(left))
+        , op(std::move(op))
+        , right(std::move(right)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         return "(" + op.lexeme + " " + left->to_string() + " " + right->to_string() + ")";
     }
 };
 
 // 逻辑运算表达式 (例如: a && b, x || y)
-struct LogicalExpr : public Expr
-{
+struct LogicalExpr : public Expr {
     std::unique_ptr<Expr> left;
     Token op;
     std::unique_ptr<Expr> right;
 
     LogicalExpr(std::unique_ptr<Expr> left, Token op, std::unique_ptr<Expr> right)
-        : left(std::move(left)), op(std::move(op)), right(std::move(right)) {}
+        : left(std::move(left))
+        , op(std::move(op))
+        , right(std::move(right)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         return "(" + op.lexeme + " " + left->to_string() + " " + right->to_string() + ")";
     }
 };
 
 // 属性/方法访问表达式 (例如: math.add 或 s1.age)
-struct GetExpr : public Expr
-{
+struct GetExpr : public Expr {
     std::unique_ptr<Expr> object; // 左边的对象 (如 math)
-    Token name;                   // 右边的属性名 (如 add)
+    Token name; // 右边的属性名 (如 add)
 
     GetExpr(std::unique_ptr<Expr> object, Token name)
-        : object(std::move(object)), name(std::move(name)) {}
+        : object(std::move(object))
+        , name(std::move(name)) { }
 
-    std::string to_string() const override
-    {
-        return "(get " + object->to_string() + " " + name.lexeme + ")";
-    }
+    std::string to_string() const override { return "(get " + object->to_string() + " " + name.lexeme + ")"; }
 };
 
 // 索引访问表达式 (例如: arr[0])
-struct IndexExpr : public Expr
-{
+struct IndexExpr : public Expr {
     std::unique_ptr<Expr> object; // 左边的对象 (如 arr)
-    std::unique_ptr<Expr> index;  // 括号里的索引表达式 (如 0)
+    std::unique_ptr<Expr> index; // 括号里的索引表达式 (如 0)
 
     IndexExpr(std::unique_ptr<Expr> object, std::unique_ptr<Expr> index)
-        : object(std::move(object)), index(std::move(index)) {}
+        : object(std::move(object))
+        , index(std::move(index)) { }
 
-    std::string to_string() const override
-    {
-        return "(index " + object->to_string() + " " + index->to_string() + ")";
-    }
+    std::string to_string() const override { return "(index " + object->to_string() + " " + index->to_string() + ")"; }
 };
 
 //  CallExpr
-struct CallExpr : public Expr
-{
+struct CallExpr : public Expr {
     std::unique_ptr<Expr> callee;
     std::vector<std::unique_ptr<Expr>> arguments;
 
     CallExpr(std::unique_ptr<Expr> callee, std::vector<std::unique_ptr<Expr>> arguments)
-        : callee(std::move(callee)), arguments(std::move(arguments)) {}
+        : callee(std::move(callee))
+        , arguments(std::move(arguments)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         std::string res = "(call " + callee->to_string();
-        for (const auto &arg : arguments)
+        for (const auto& arg : arguments)
             res += " " + arg->to_string();
         return res + ")";
     }
@@ -197,47 +189,56 @@ struct CallExpr : public Expr
 // ==========================================
 
 // 变量声明语句 (例如: auto x1 = 42)
-struct VarDeclStmt : public Stmt
-{
-    Token name;                        // 变量名
+struct VarDeclStmt : public Stmt {
+    Token name; // 变量名
     std::unique_ptr<Expr> initializer; // 初始化表达式 (可能为空，如 x3: Bool)
     // 提示：未来这里可以加一个 Token type_annotation 用于处理显式类型标注
 
     VarDeclStmt(Token name, std::unique_ptr<Expr> initializer)
-        : name(std::move(name)), initializer(std::move(initializer)) {}
+        : name(std::move(name))
+        , initializer(std::move(initializer)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         std::string init_str = initializer ? initializer->to_string() : "null";
         return "(var " + name.lexeme + " = " + init_str + ")";
     }
 };
 
-// 表达式语句 (例如: 单独的一行 print("Hello"); 或是单独的方法调用 s1.age())
-struct ExpressionStmt : public Stmt
-{
-    std::unique_ptr<Expr> expression;
+// 多变量声明语句 (例如: x: Int, y: Int = 12, 32)
+struct MultiVarDeclStmt : public Stmt {
+    std::vector<std::unique_ptr<Stmt>> decls; // 存放多个 VarDeclStmt
 
-    explicit ExpressionStmt(std::unique_ptr<Expr> expression)
-        : expression(std::move(expression)) {}
+    explicit MultiVarDeclStmt(std::vector<std::unique_ptr<Stmt>> decls)
+        : decls(std::move(decls)) { }
 
-    std::string to_string() const override
-    {
-        return "(expr " + expression->to_string() + ")";
+    std::string to_string() const override {
+        std::string res = "(multivar ";
+        for (const auto& decl : decls) {
+            if (decl)
+                res += decl->to_string() + " ";
+        }
+        return res + ")";
     }
 };
 
+// 表达式语句 (例如: 单独的一行 print("Hello"); 或是单独的方法调用 s1.age())
+struct ExpressionStmt : public Stmt {
+    std::unique_ptr<Expr> expression;
+
+    explicit ExpressionStmt(std::unique_ptr<Expr> expression)
+        : expression(std::move(expression)) { }
+
+    std::string to_string() const override { return "(expr " + expression->to_string() + ")"; }
+};
+
 // 块级作用域语句 (例如: { ... })
-struct BlockStmt : public Stmt
-{
+struct BlockStmt : public Stmt {
     std::vector<std::unique_ptr<Stmt>> statements;
     explicit BlockStmt(std::vector<std::unique_ptr<Stmt>> statements)
-        : statements(std::move(statements)) {}
-    std::string to_string() const override
-    {
+        : statements(std::move(statements)) { }
+    std::string to_string() const override {
         std::string res = "(block ";
-        for (const auto &stmt : statements)
-        {
+        for (const auto& stmt : statements) {
             if (stmt)
                 res += stmt->to_string() + " ";
         }
@@ -247,27 +248,24 @@ struct BlockStmt : public Stmt
 };
 
 // 函数声明
-struct FunctionStmt : public Stmt
-{
-    Token keyword;                           // 'func' 或 'method'
-    Token name;                              // 函数/方法名
-    std::vector<ParamDecl> params;           // 参数列表
-    std::vector<ParamDecl> return_vars;      // 返回变量列表
+struct FunctionStmt : public Stmt {
+    Token keyword; // 'func' 或 'method'
+    Token name; // 函数/方法名
+    std::vector<ParamDecl> params; // 参数列表
+    std::vector<ParamDecl> return_vars; // 返回变量列表
     std::vector<std::unique_ptr<Stmt>> body; // 函数体
-    FunctionStmt(Token keyword, Token name, std::vector<ParamDecl> params,
-                 std::vector<ParamDecl> return_vars, std::vector<std::unique_ptr<Stmt>> body)
-        : keyword(std::move(keyword)),
-          name(std::move(name)),
-          params(std::move(params)),
-          return_vars(std::move(return_vars)),
-          body(std::move(body)) {}
-    std::string to_string() const override
-    {
+    FunctionStmt(Token keyword, Token name, std::vector<ParamDecl> params, std::vector<ParamDecl> return_vars,
+        std::vector<std::unique_ptr<Stmt>> body)
+        : keyword(std::move(keyword))
+        , name(std::move(name))
+        , params(std::move(params))
+        , return_vars(std::move(return_vars))
+        , body(std::move(body)) { }
+    std::string to_string() const override {
         std::string res = "(" + keyword.lexeme + " " + name.lexeme + "(";
 
         // 1. 打印参数列表 (包括类型和默认值)
-        for (size_t i = 0; i < params.size(); ++i)
-        {
+        for (size_t i = 0; i < params.size(); ++i) {
             res += params[i].name.lexeme;
             if (!params[i].type_name.empty())
                 res += ":" + params[i].type_name;
@@ -279,8 +277,7 @@ struct FunctionStmt : public Stmt
         res += ") -> (";
 
         // 2. 打印返回签名 (同理)
-        for (size_t i = 0; i < return_vars.size(); ++i)
-        {
+        for (size_t i = 0; i < return_vars.size(); ++i) {
             res += return_vars[i].name.lexeme;
             if (!return_vars[i].type_name.empty())
                 res += ":" + return_vars[i].type_name;
@@ -292,8 +289,7 @@ struct FunctionStmt : public Stmt
         res += ") ";
 
         // 3. 打印函数体
-        for (const auto &stmt : body)
-        {
+        for (const auto& stmt : body) {
             if (stmt)
                 res += stmt->to_string() + " ";
         }
@@ -302,16 +298,15 @@ struct FunctionStmt : public Stmt
 };
 
 // Return 语句
-struct ReturnStmt : public Stmt
-{
+struct ReturnStmt : public Stmt {
     Token keyword;
     std::vector<std::unique_ptr<Expr>> values; // 要返回的表达式 可能为nullptr
 
     ReturnStmt(Token keyword, std::vector<std::unique_ptr<Expr>> values)
-        : keyword(std::move(keyword)), values(std::move(values)) {}
+        : keyword(std::move(keyword))
+        , values(std::move(values)) { }
 
-    std::string to_string() const override
-    {
+    std::string to_string() const override {
         if (values.empty())
             return "(return null)";
         std::string res = "(return";
@@ -324,12 +319,94 @@ struct ReturnStmt : public Stmt
 };
 
 // 模块导入语句 (例如: import c "func1.c" as func1_c)
-struct ImportStmt : public Stmt
-{
-    Token lang_type;   // 外部语言类型 (例如 'c', 'cpp', 'py'。如果是原生 Xaq 模块，这个 Token 可以标记为为空或特殊类型)
+struct ImportStmt : public Stmt {
+    Token lang_type; // 外部语言类型 (例如 'c', 'cpp', 'py'。如果是原生 Xaq 模块，这个 Token 可以标记为为空或特殊类型)
     Token module_path; // 模块路径或名称 (例如 "func1.c" 或 math)
-    Token alias;       // 别名 (例如 func1_c。如果没有别名，则与 module_path 核心名一致)
+    Token alias; // 别名 (例如 func1_c。如果没有别名，则与 module_path 核心名一致)
 
     ImportStmt(Token lang_type, Token module_path, Token alias)
-        : lang_type(std::move(lang_type)), module_path(std::move(module_path)), alias(std::move(alias)) {}
+        : lang_type(std::move(lang_type))
+        , module_path(std::move(module_path))
+        , alias(std::move(alias)) { }
+};
+
+// If 条件语句
+struct IfStmt : public Stmt {
+    std::unique_ptr<Stmt> init_stmt; // 用于存放内链函数的定义 （如果有的话）
+    std::unique_ptr<Expr> condition;
+    std::unique_ptr<Stmt> then_branch; // 通常是一个 BlockStmt
+    std::unique_ptr<Stmt> else_branch; // 可能为空，也可能是一个 BlockStmt 或另一个 IfStmt (处理 else if)
+
+    IfStmt(std::unique_ptr<Stmt> init_stmt, std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> then_branch,
+        std::unique_ptr<Stmt> else_branch)
+        : init_stmt(std::move(init_stmt))
+        , condition(std::move(condition))
+        , then_branch(std::move(then_branch))
+        , else_branch(std::move(else_branch)) { }
+
+    std::string to_string() const override {
+        std::string res = "(if ";
+        if (init_stmt)
+            res += "init: " + init_stmt->to_string() + " ";
+        res += condition->to_string() + " " + then_branch->to_string();
+        if (else_branch)
+            res += " else " + else_branch->to_string();
+        return res + ")";
+    }
+};
+
+// For 循环语句 (目前先实现最基础的条件循环，对应 START.md 中的 for i > 0 { ... })
+struct ForStmt : public Stmt {
+    std::unique_ptr<Token> vars; // 循环变量
+    std::unique_ptr<Expr> condition; // 循环条件
+    std::unique_ptr<Stmt> body; // 循环体
+
+    ForStmt(std::unique_ptr<Expr> condition, std::unique_ptr<Stmt> body)
+        : condition(std::move(condition))
+        , body(std::move(body)) { }
+
+    std::string to_string() const override { return "(for " + condition->to_string() + " " + body->to_string() + ")"; }
+};
+
+// For-In 循环语句 (例如: for i, v in arr {...} 或 for i in 10, 5, -1 {...})
+struct ForInStmt : public Stmt {
+    std::vector<Token> vars; // 循环变量 (例如 i 或者 i, v)
+    std::vector<std::unique_ptr<Expr>> iterables; // in 后面的表达式列表
+    std::unique_ptr<Stmt> body; // 循环体
+
+    ForInStmt(std::vector<Token> vars, std::vector<std::unique_ptr<Expr>> iterables, std::unique_ptr<Stmt> body)
+        : vars(std::move(vars))
+        , iterables(std::move(iterables))
+        , body(std::move(body)) { }
+
+    std::string to_string() const override {
+        std::string res = "(for-in [";
+        for (const auto& v : vars)
+            res += v.lexeme + " ";
+        res += "] in [";
+        for (const auto& expr : iterables)
+            res += expr->to_string() + " ";
+        return res + "] " + body->to_string() + ")";
+    }
+};
+
+// 类声明语句
+struct ClassStmt : public Stmt
+{
+    Token name; // 类的名称
+    // 存放成员变量声明 (利用你已有的变量声明节点)
+    std::vector<std::unique_ptr<Stmt>> properties; 
+    // 存放方法声明 (复用普通的 FunctionStmt，但在解析时由 method 关键字引导)
+    std::vector<std::unique_ptr<Stmt>> methods;    
+
+    ClassStmt(Token name, std::vector<std::unique_ptr<Stmt>> properties, std::vector<std::unique_ptr<Stmt>> methods)
+        : name(std::move(name)), properties(std::move(properties)), methods(std::move(methods)) {}
+
+    std::string to_string() const override
+    {
+        std::string res = "(class " + name.lexeme + " ";
+        for (const auto& prop : properties) res += prop->to_string() + " ";
+        for (const auto& method : methods) res += method->to_string() + " ";
+        return res + ")";
+    }
 };

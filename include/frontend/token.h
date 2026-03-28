@@ -52,3 +52,4 @@ struct Token {
     Token(TokenType type, std::string lexeme, int line)
         : type(type), lexeme(std::move(lexeme)), line(line) {}
 };
+

@@ -56,7 +56,12 @@ public:
             return static_cast<double>(std::get<int64_t>(value_));
         throw std::runtime_error("Value is not a Float.");
     }
-
+    std::string as_string() const
+    {
+        if (type_ == ValueType::String)
+            return std::get<std::string>(value_);
+        throw std::runtime_error("Value is not a String.");
+    }
     bool is_truthy() const
     {
         if (type_ == ValueType::Null)

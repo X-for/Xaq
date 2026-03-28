@@ -168,7 +168,10 @@ CMakeFiles/xaq.dir/src/main.cpp.o: /home/zaq/Workspace/Xaq/src/main.cpp \
  /usr/include/c++/13/bits/erase_if.h \
  /home/zaq/Workspace/Xaq/include/frontend/token.h \
  /home/zaq/Workspace/Xaq/include/frontend/parser.h \
- /usr/include/c++/13/memory /usr/include/c++/13/bits/stl_tempbuf.h \
+ /home/zaq/Workspace/Xaq/include/frontend/ast.h \
+ /home/zaq/Workspace/Xaq/include/core/value.h /usr/include/c++/13/variant \
+ /usr/include/c++/13/bits/parse_numbers.h /usr/include/c++/13/memory \
+ /usr/include/c++/13/bits/stl_tempbuf.h \
  /usr/include/c++/13/bits/stl_raw_storage_iter.h \
  /usr/include/c++/13/bits/align.h \
  /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \
@@ -185,8 +188,5 @@ CMakeFiles/xaq.dir/src/main.cpp.o: /home/zaq/Workspace/Xaq/src/main.cpp \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h \
- /home/zaq/Workspace/Xaq/include/frontend/ast.h \
- /home/zaq/Workspace/Xaq/include/core/value.h /usr/include/c++/13/variant \
- /usr/include/c++/13/bits/parse_numbers.h \
  /home/zaq/Workspace/Xaq/include/backend/evaluator.h \
  /home/zaq/Workspace/Xaq/include/backend/environment.h

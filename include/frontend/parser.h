@@ -1,8 +1,8 @@
 #pragma once
-#include <vector>
-#include <memory>
-#include "frontend/token.h"
 #include "frontend/ast.h"
+#include "frontend/token.h"
+#include <memory>
+#include <vector>
 
 class Parser {
 private:
@@ -17,6 +17,8 @@ private:
     bool check(TokenType type) const;
     Token advance();
     bool match(std::initializer_list<TokenType> types);
+    bool is_inline_func_condition() const; // 识别内链函数
+    bool is_for_in_loop() const; // 识别 for-in 循环
     Token consume(TokenType type, const std::string& message);
 
     // --- 递归下降的核心：解析各种语法结构 ---
@@ -25,25 +27,31 @@ private:
     std::unique_ptr<Expr> comparison();
     std::unique_ptr<Expr> term();
     std::unique_ptr<Expr> factor();
+    std::unique_ptr<Expr> unary();
     std::unique_ptr<Expr> call();
     std::unique_ptr<Expr> primary(); // 解析最基础的字面量或括号
     std::unique_ptr<Expr> logical_or();
     std::unique_ptr<Expr> logical_and();
 
     // 语法解析的路由方法
-    std::unique_ptr<Stmt> declaration();         // 判断是声明变量还是普通语句
-    std::unique_ptr<Stmt> var_declaration();     // 处理 auto x = 42
-    std::unique_ptr<Stmt> statement();           // 处理普通语句
-    std::unique_ptr<Stmt> expression_statement();// 处理独立的表达式 (如 1 + 2)
-    std::unique_ptr<Expr> assignment();          // 处理赋值表达式 (如 x = 1 + 2)
+    std::unique_ptr<Stmt> declaration(); // 判断是声明变量还是普通语句
+    std::unique_ptr<Stmt> var_declaration(); // 处理 auto x = 42
+    std::unique_ptr<Stmt> statement(); // 处理普通语句
+    std::unique_ptr<Stmt> if_statement();
+    std::unique_ptr<Stmt> for_statement();
+    std::unique_ptr<Stmt> expression_statement(); // 处理独立的表达式 (如 1 + 2)
+    std::unique_ptr<Expr> assignment(); // 处理赋值表达式 (如 x = 1 + 2)
 
     std::vector<std::unique_ptr<Stmt>> block(); // 处理块级作用域 { ... }
-    std::unique_ptr<Stmt> function(const std::string& kind); // 处理函数和方法声明 
+    std::unique_ptr<Stmt> function(const std::string& kind); // 处理函数和方法声明
     std::unique_ptr<Stmt> return_statement(); // 处理 return 语句
+
+    std::unique_ptr<Stmt> class_declaration(); // 声明处理 class 关键字的函数
+    std::unique_ptr<Stmt> method_declaration(); // 声明处理 method 关键字的函数
 
 public:
     explicit Parser(std::vector<Token> tokens);
 
     // 启动解析，返回一个表示整个表达式或语句的 AST 节点
-    std::vector<std::unique_ptr<Stmt>> parse(); 
+    std::vector<std::unique_ptr<Stmt>> parse();
 };
