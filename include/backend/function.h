@@ -36,3 +36,25 @@ public:
 
     std::string to_string() const override { return "<native fn>"; }
 };
+
+class BaseClass : public BaseCallable {
+public:
+    std::string name;
+    ClassStmt* declaration; // 保存类的 AST 节点，后面实例化时需要从中提取属性和方法
+
+    BaseClass(std::string name, ClassStmt* declaration)
+        : name(std::move(name)), declaration(declaration) {}
+
+    int arity() const override { 
+        return 0; // 暂时写死为 0，等我们做构造函数时再改
+    }
+
+    Value call(Evaluator* evaluator, const std::vector<Value>& arguments) override {
+        // TODO: 这里将来要负责 new 一个 XaqInstance 对象出来并返回
+        return Value(); 
+    }
+
+    std::string to_string() const override { 
+        return "<class " + name + ">"; 
+    }
+};

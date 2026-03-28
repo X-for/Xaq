@@ -270,6 +270,9 @@ std::unique_ptr<Stmt> Parser::declaration() {
         if (match({ TokenType::AUTO })) {
             return var_declaration();
         }
+        if (match({ TokenType::CLASS })) {
+            return class_declaration();
+        }
         if (check(TokenType::IDENTIFIER) && peek_next().type == TokenType::COLON) {
             return var_declaration();
         }

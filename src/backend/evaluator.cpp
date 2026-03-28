@@ -3,8 +3,7 @@
 #include "fstream"
 
 // 假设这是你的 Evaluator 构造函数
-Evaluator::Evaluator()
-{
+Evaluator::Evaluator() {
     environment_ = std::make_shared<Environment>();
 
     // 在 Evaluator 构造函数的最开头，解绑 C/C++ IO 流同步，极大提升读写速度
@@ -15,7 +14,7 @@ Evaluator::Evaluator()
     environment_->define("__print__", Value(std::make_shared<NativeFunction>(1, [](const std::vector<Value>& args) {
         // 调用 as_string() 提取原生 C++ 字符串，避免 operator<< 自带的引号
         // 如果传入的 args[0] 不是 String 类型，as_string() 会自动抛出类型错误
-        std::cout << args[0].as_string() << '\n'; 
+        std::cout << args[0].as_string() << '\n';
         return Value();
     })));
 
@@ -24,7 +23,7 @@ Evaluator::Evaluator()
         std::string line;
         std::getline(std::cin, line);
         // 直接封装为 String 类型的 Value 返回
-        return Value(line); 
+        return Value(line);
     })));
 
     // 3. 注入文件 IO 流：read_file 函数
@@ -42,16 +41,14 @@ Evaluator::Evaluator()
 // 1. 语句执行入口与路由
 // ==========================================
 
-void Evaluator::evaluate(const std::vector<std::unique_ptr<Stmt>>& statements)
-{
+void Evaluator::evaluate(const std::vector<std::unique_ptr<Stmt>>& statements) {
     for (const auto& stmt : statements) {
         if (stmt)
             execute(stmt.get());
     }
 }
 
-void Evaluator::execute(Stmt* stmt)
-{
+void Evaluator::execute(Stmt* stmt) {
     if (auto var_decl = dynamic_cast<VarDeclStmt*>(stmt)) {
         execute_var_decl(var_decl);
     } else if (auto expr_stmt = dynamic_cast<ExpressionStmt*>(stmt)) {
@@ -70,7 +67,11 @@ void Evaluator::execute(Stmt* stmt)
         execute_multi_var_decl(multi_var_decl);
     } else if (auto for_in_stmt = dynamic_cast<ForInStmt*>(stmt)) {
         execute_for_in(for_in_stmt);
-    } else {
+    } else if (auto class_stmt = dynamic_cast<ClassStmt*>(stmt)) {
+        execute_class(class_stmt);
+    }
+
+    else {
         throw std::runtime_error("Unknown statement type in evaluator.");
     }
 }
@@ -80,8 +81,7 @@ void Evaluator::execute(Stmt* stmt)
 // ==========================================
 
 // 执行变量声明：auto x = 42
-void Evaluator::execute_var_decl(VarDeclStmt* stmt)
-{
+void Evaluator::execute_var_decl(VarDeclStmt* stmt) {
     Value value = Value(); // 默认赋值为 Null
 
     // 如果等号右边有初始化表达式，就先把它算出来
@@ -100,8 +100,7 @@ void Evaluator::execute_expression_stmt(ExpressionStmt* stmt) { Value result = e
 // 3. 表达式求值路由补充 (读取变量)
 // ==========================================
 
-Value Evaluator::evaluate(Expr* expr)
-{
+Value Evaluator::evaluate(Expr* expr) {
     if (!expr)
         throw std::runtime_error("Cannot evaluate null expression.");
 
@@ -132,8 +131,7 @@ Value Evaluator::evaluate(Expr* expr)
 Value Evaluator::evaluate_literal(LiteralExpr* expr) { return expr->value; }
 
 // 实现一元运算
-Value Evaluator::evaluate_unary(UnaryExpr* expr)
-{
+Value Evaluator::evaluate_unary(UnaryExpr* expr) {
     Value right = evaluate(expr->right.get());
     if (expr->op.type == TokenType::MINUS) {
         if (right.get_type() == ValueType::Float)
@@ -145,8 +143,7 @@ Value Evaluator::evaluate_unary(UnaryExpr* expr)
     throw std::runtime_error("Unsupported unary operator.");
 }
 
-Value Evaluator::evaluate_array(ArrayExpr* expr)
-{
+Value Evaluator::evaluate_array(ArrayExpr* expr) {
     auto elements = std::make_shared<std::vector<Value>>();
     for (const auto& el : expr->elements) {
         // 递归求值数组里的每一个元素
@@ -156,8 +153,7 @@ Value Evaluator::evaluate_array(ArrayExpr* expr)
 }
 
 // 实现数组索引访问
-Value Evaluator::evaluate_index(IndexExpr* expr)
-{
+Value Evaluator::evaluate_index(IndexExpr* expr) {
     Value obj = evaluate(expr->object.get()); // 算出左边是个啥 (比如 arr)
     Value index = evaluate(expr->index.get()); // 算出中括号里是个啥 (比如 i)
 
@@ -179,8 +175,7 @@ Value Evaluator::evaluate_index(IndexExpr* expr)
 }
 
 // 2. 执行二元运算：先算左边，再算右边，最后结合
-Value Evaluator::evaluate_binary(BinaryExpr* expr)
-{
+Value Evaluator::evaluate_binary(BinaryExpr* expr) {
     // 递归求值左子树和右子树
     Value left = evaluate(expr->left.get());
     Value right = evaluate(expr->right.get());
@@ -242,8 +237,7 @@ Value Evaluator::evaluate_binary(BinaryExpr* expr)
     throw std::runtime_error("Unsupported binary operator:" + expr->op.lexeme);
 }
 
-Value Evaluator::evaluate_logical(LogicalExpr* expr)
-{
+Value Evaluator::evaluate_logical(LogicalExpr* expr) {
     // 关键点：只先求值左边！
     Value left = evaluate(expr->left.get());
 
@@ -261,8 +255,7 @@ Value Evaluator::evaluate_logical(LogicalExpr* expr)
     return evaluate(expr->right.get());
 }
 
-Value Evaluator::evaluate_assign(AssignExpr* expr)
-{
+Value Evaluator::evaluate_assign(AssignExpr* expr) {
     // 1. 先把等号右边的值算出来
     Value right_val = evaluate(expr->value.get());
 
@@ -298,8 +291,7 @@ Value Evaluator::evaluate_assign(AssignExpr* expr)
 }
 
 // 执行代码块
-void Evaluator::execute_block(BlockStmt* stmt, std::shared_ptr<Environment> block_env)
-{
+void Evaluator::execute_block(BlockStmt* stmt, std::shared_ptr<Environment> block_env) {
     std::shared_ptr<Environment> previous = environment_; // 先保存当前环境
     try {
         environment_ = block_env; // 将执行器的环境切换到新的局部环境
@@ -317,8 +309,7 @@ void Evaluator::execute_block(BlockStmt* stmt, std::shared_ptr<Environment> bloc
 // 读取变量：直接向 Environment 要数据
 Value Evaluator::evaluate_variable(VariableExpr* expr) { return environment_->get(expr->name.lexeme); }
 
-void Evaluator::execute_multi_var_decl(MultiVarDeclStmt* stmt)
-{
+void Evaluator::execute_multi_var_decl(MultiVarDeclStmt* stmt) {
     // 关键：不创建新的 Environment，直接在当前环境中依次执行声明
     for (const auto& decl : stmt->decls) {
         if (decl) {
@@ -330,15 +321,13 @@ void Evaluator::execute_multi_var_decl(MultiVarDeclStmt* stmt)
 // ============ 函数/方法 ===============
 
 // 把函数存入内存
-void Evaluator::execute_function(FunctionStmt* stmt)
-{
+void Evaluator::execute_function(FunctionStmt* stmt) {
     auto func = std::make_shared<Function>(stmt, environment_);
     environment_->define(stmt->name.lexeme, Value(func));
 }
 
 // 2. 执行 Return，直接抛出异常打断 C++ 调用栈
-void Evaluator::execute_return(ReturnStmt* stmt)
-{
+void Evaluator::execute_return(ReturnStmt* stmt) {
     // 无返回值
     if (stmt->values.empty()) {
         throw ReturnException(Value(), false); // 没有返回值，触发隐式返回规则
@@ -358,8 +347,7 @@ void Evaluator::execute_return(ReturnStmt* stmt)
 }
 
 // 3. 执行函数调用 (例如: add(1, 2))
-Value Evaluator::evaluate_call(CallExpr* expr)
-{
+Value Evaluator::evaluate_call(CallExpr* expr) {
     // 3.1 先算出被调用的对象 (比如从内存里拿出 add 函数)
     Value callee = evaluate(expr->callee.get());
 
@@ -378,8 +366,7 @@ Value Evaluator::evaluate_call(CallExpr* expr)
 
 // 4. 补充一个 execute_block 的重载，专为函数体服务
 void Evaluator::execute_block(
-    const std::vector<std::unique_ptr<Stmt>>& statements, std::shared_ptr<Environment> block_env)
-{
+    const std::vector<std::unique_ptr<Stmt>>& statements, std::shared_ptr<Environment> block_env) {
     std::shared_ptr<Environment> previous = environment_;
     try {
         environment_ = block_env;
@@ -396,8 +383,7 @@ void Evaluator::execute_block(
 
 // ============= 控制 ==============
 // 执行 if 语句
-void Evaluator::execute_if(IfStmt* stmt)
-{
+void Evaluator::execute_if(IfStmt* stmt) {
     // 1. 如果有内联函数定义，先执行它 (将其注册到当前环境)
     if (stmt->init_stmt != nullptr) {
         execute(stmt->init_stmt.get());
@@ -415,8 +401,7 @@ void Evaluator::execute_if(IfStmt* stmt)
 }
 
 // 执行基础 for 循环
-void Evaluator::execute_for(ForStmt* stmt)
-{
+void Evaluator::execute_for(ForStmt* stmt) {
     // 只要条件为真，就一直执行 body
     while (evaluate(stmt->condition.get()).is_truthy()) {
         execute(stmt->body.get());
@@ -424,8 +409,7 @@ void Evaluator::execute_for(ForStmt* stmt)
 }
 
 // for in 循环
-void Evaluator::execute_for_in(ForInStmt* stmt)
-{
+void Evaluator::execute_for_in(ForInStmt* stmt) {
     // 1. 计算 in 后面的所有表达式的值
     std::vector<Value> iter_vals;
     for (const auto& expr : stmt->iterables) {
@@ -499,4 +483,16 @@ void Evaluator::execute_for_in(ForInStmt* stmt)
         throw;
     }
     environment_ = previous;
+}
+
+
+void Evaluator::execute_class(ClassStmt* stmt) {
+    // 1. 先在环境中占个坑（允许类的方法在内部引用类自己，比如链表节点）
+    environment_->define(stmt->name.lexeme, Value());
+    
+    // 2. 实例化一个代表类蓝图的 C++ 对象 (我们待会儿要定义的 XaqClass)
+    auto klass = std::make_shared<BaseClass>(stmt->name.lexeme, stmt);
+    
+    // 3. 把这个蓝图正式存入变量名中
+    environment_->assign(stmt->name.lexeme, Value(klass));
 }
